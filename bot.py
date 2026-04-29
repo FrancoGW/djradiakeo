@@ -113,13 +113,22 @@ async def play(ctx, *, query: str):
     guild_id = ctx.guild.id
     channel = ctx.author.voice.channel
 
-    # Unirse al canal si no está
-    vc = voice_clients.get(guild_id)
-    if vc is None or not vc.is_connected():
+    # Limpiar voice client fantasma si existe
+    existing_vc = ctx.guild.voice_client
+    if existing_vc is not None:
+        try:
+            await existing_vc.disconnect(force=True)
+        except Exception:
+            pass
+        voice_clients.pop(guild_id, None)
+        await asyncio.sleep(1)
+
+    try:
         vc = await channel.connect(timeout=60.0, reconnect=True)
         voice_clients[guild_id] = vc
-    elif vc.channel != channel:
-        await vc.move_to(channel)
+    except Exception as e:
+        await ctx.send(f"❌ No pude conectarme al canal de voz: {e}")
+        return
 
     await ctx.send(f"🔍 **DJ Radiakeo** buscando: `{query}`...")
 
@@ -181,7 +190,7 @@ async def stop(ctx):
     if vc:
         get_queue(guild_id).clear()
         vc.stop()
-        await vc.disconnect()
+        await vc.disconnect(force=True)
         voice_clients.pop(guild_id, None)
         await ctx.send("⏹️ **DJ Radiakeo** se fue a descansar. ¡Hasta luego!")
     else:
