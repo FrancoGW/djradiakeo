@@ -1,4 +1,4 @@
-# 🎧 DJ Marcelo — Bot de Música para Discord
+# 🎧 DJ Radiakeo — Bot de Música para Discord
 
 El mejor DJ del server. Pone música de YouTube directo en tu canal de voz.
 
