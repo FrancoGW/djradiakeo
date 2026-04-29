@@ -116,7 +116,7 @@ async def play(ctx, *, query: str):
     # Unirse al canal si no está
     vc = voice_clients.get(guild_id)
     if vc is None or not vc.is_connected():
-        vc = await channel.connect()
+        vc = await channel.connect(timeout=60.0, reconnect=True)
         voice_clients[guild_id] = vc
     elif vc.channel != channel:
         await vc.move_to(channel)
